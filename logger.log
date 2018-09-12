@@ -1,0 +1,32 @@
+INFO:root:info message
+INFO:werkzeug: * Running on http://127.0.0.1:10450/ (Press CTRL+C to quit)
+INFO:root:info message
+INFO:mylogger:10450 is started 14962 8732
+INFO:werkzeug: * Running on http://127.0.0.1:10450/ (Press CTRL+C to quit)
+INFO:root:info message
+INFO:mylogger:10341
+INFO:root:info message
+INFO:mylogger:10340
+INFO:mylogger:10341 is started 14993 14712
+INFO:mylogger:10340 is started 14992 14712
+INFO:werkzeug: * Running on http://127.0.0.1:10341/ (Press CTRL+C to quit)
+INFO:werkzeug: * Running on http://127.0.0.1:10340/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [12/Sep/2018 23:31:50] "GET / HTTP/1.1" 200 -
+INFO:root:info message
+INFO:root:info message
+INFO:mylogger:10342
+INFO:mylogger:10343
+INFO:mylogger:10342 is started 15047 14712
+INFO:mylogger:10343 is started 15048 14712
+INFO:werkzeug: * Running on http://127.0.0.1:10343/ (Press CTRL+C to quit)
+INFO:werkzeug: * Running on http://127.0.0.1:10342/ (Press CTRL+C to quit)
+INFO:root:info message
+INFO:mylogger:10345
+INFO:root:info message
+INFO:mylogger:10344
+INFO:mylogger:10345 is started 15066 14712
+INFO:mylogger:10344 is started 15065 14712
+INFO:werkzeug: * Running on http://127.0.0.1:10345/ (Press CTRL+C to quit)
+INFO:werkzeug: * Running on http://127.0.0.1:10344/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [12/Sep/2018 23:33:13] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [12/Sep/2018 23:33:13] "GET /favicon.ico HTTP/1.1" 404 -

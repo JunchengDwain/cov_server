@@ -4,6 +4,11 @@ from flask import (
     Flask,
     jsonify
 )
+import logging
+
+logger = logging.getLogger('mylogger')
+logging.basicConfig(level=logging.INFO,filename='logger.log')
+logging.info("info message")
 
 
 COV_RENT = 'cov_rent'
@@ -12,6 +17,9 @@ if os.environ.get(COV_RENT, None) is not None:
     cov = os.environ[COV_RENT]
     cov_config = json.loads(cov)
     port = cov_config.get('sub_port', None)+100
+    logger.info(port)
+
+
 
 app = Flask(__name__)
 
@@ -20,10 +28,14 @@ def index():
     return 'port:{}'.format(port)
 
 if __name__ == '__main__':
+    # 创建一个logger
+
+
     config = {
         'host' : '127.0.0.1',
         'port' : port,
         # 'debug' : True,
     }
-    print(port,'is start')
+    st = '{} is started {} {}'.format(port,os.getpid(),os.getppid())
+    logger.info(st)
     app.run(**config)

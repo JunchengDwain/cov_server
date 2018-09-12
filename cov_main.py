@@ -87,9 +87,15 @@ class EnvManage(object):
         pass
 
     def pros_stats(self):
+        result = []
         for pro in self.pros:
-            print(pro.pid)
-        return self.pros
+            result.append(pro.pid)
+        return result
+
+    def terminal_pros(self):
+        for pro in self.pros:
+            pro.terminate()
+            print(pro.returncode)
 
     def create_pros(self, files):
         self.close_pros()
@@ -133,12 +139,18 @@ def start():
 @app.route("/",methods=['GET','POST'])
 def index():
     env = EnvManage()
-    return str(env.pros_stats())
+    return ''.join(str(env.pros_stats()))
+
+@app.route("/terminal",methods=['GET','POST'])
+def terminal():
+    env = EnvManage()
+    env.terminal_pros()
+    return len(env.pros_stats())
 
 if __name__ == '__main__':
     config = {
         'host' : '127.0.0.1',
         'port' : LOCAL_PORT,
-        'debug' : True,
+        # 'debug' : True,
     }
     app.run(**config)
