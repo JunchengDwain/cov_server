@@ -71,7 +71,6 @@ app = Flask(__name__)
 
 class EnvManage(object):
     _instance = None
-    _pros = []
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -79,11 +78,18 @@ class EnvManage(object):
         return cls._instance
 
     def __init__(self):
-        _pros = []
+        if not hasattr(self, 'pros'):
+            self.pros = []
+        pass
 
     def close_pros(self):
         # 关闭所有子进程
         pass
+
+    def pros_stats(self):
+        for pro in self.pros:
+            print(pro.pid)
+        return self.pros
 
     def create_pros(self, files):
         self.close_pros()
@@ -103,8 +109,8 @@ class EnvManage(object):
             os.environ[COV_RENT] = json.dumps(new_dict)
             p = subprocess.Popen('python {}'.format(file), shell = True,
                                  stdout=subprocess.PIPE)
-            p.wait()
-            print(p.stdout.read())
+            self.pros.append(p)
+
             # response = wait_connect(ports[index])
             # print(response)
             # assert response is not None
@@ -124,11 +130,15 @@ def start():
     else:
         return 'please post data'
 
+@app.route("/",methods=['GET','POST'])
+def index():
+    env = EnvManage()
+    return str(env.pros_stats())
 
 if __name__ == '__main__':
     config = {
         'host' : '127.0.0.1',
-        # 'port' : LOCAL_PORT,
+        'port' : LOCAL_PORT,
         'debug' : True,
     }
     app.run(**config)
