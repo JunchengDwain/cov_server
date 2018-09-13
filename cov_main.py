@@ -9,7 +9,8 @@ import subprocess
 import os
 import time
 import signal
-
+import sys
+import requests
 
 LOCAL_IP = '127.0.0.1'
 LOCAL_PORT = 5000
@@ -82,23 +83,22 @@ class EnvManage(object):
             self.pros = []
         pass
 
-    def close_pros(self):
-        # 关闭所有子进程
-        pass
-
     def pros_stats(self):
         result = []
         for pro in self.pros:
-            result.append(pro.pid)
+            result.append(pro.get('sub_pro',None).pid)
         return result
 
     def terminal_pros(self):
         for pro in self.pros:
-            pro.terminate()
-            print(pro.returncode)
+            pro.get('sub_pro', None).terminate()
+            p = pro.get('sub_pro',None)
+            if (not p) or p.poll():
+                self.pros.remove(pro)
+
 
     def create_pros(self, files):
-        self.close_pros()
+        self.terminal_pros()
         ports = get_available_ports(len(files))
         self.file_path = './cov/cov_{}'.format(time.strftime("%Y_%m_%d_%H_%M",
                                     time.localtime()))
@@ -113,13 +113,33 @@ class EnvManage(object):
                 'sub_port': ports[index],
             }
             os.environ[COV_RENT] = json.dumps(new_dict)
-            p = subprocess.Popen('python {}'.format(file), shell = True,
-                                 stdout=subprocess.PIPE)
-            self.pros.append(p)
+            print(sys.executable)
+            cmd =[sys.executable, file]
+            p = subprocess.Popen(cmd, shell = False)
+            pro_info = dict(
+                sub_pro = p,
+                port = ports[index],
+                exec_file = '{}_{}'.format(file_name, index),
+            )
+            self.pros.append(pro_info)
 
             # response = wait_connect(ports[index])
             # print(response)
             # assert response is not None
+
+    def cov_save(self):
+        for pro_info in self.pros:
+            port = pro_info.get('port', None)
+            if port:
+                url = 'http://127.0.0.1:{}/save'.format(port)
+                requests.get(url)
+
+    def cov_stop(self):
+        for pro_info in self.pros:
+            port = pro_info.get('port', None)
+            if port:
+                url = 'http://127.0.0.1:{}/stop'.format(port)
+                requests.get(url)
 
 
 @app.route("/start/", methods=['GET','POST'])
@@ -145,7 +165,20 @@ def index():
 def terminal():
     env = EnvManage()
     env.terminal_pros()
-    return len(env.pros_stats())
+    return str(len(env.pros_stats()))
+
+@app.route("/save", methods=['GET','POST'])
+def save():
+    env = EnvManage()
+    env.cov_save()
+    return 'save'
+
+@app.route("/stop", methods=['GET','POST'])
+def stop():
+    env = EnvManage()
+    env.cov_stop()
+    return 'stop'
+
 
 if __name__ == '__main__':
     config = {

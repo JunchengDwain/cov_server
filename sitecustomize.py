@@ -1,5 +1,4 @@
 # 初始化部分服务
-import coverage
 import os
 import json
 
@@ -19,18 +18,34 @@ if os.environ.get(COV_RENT, None) is not None:
     from  gevent.pywsgi import WSGIServer
     from gevent import monkey
     import time
+    import coverage
     monkey.patch_all()
 
 
-    cov = os.environ[COV_RENT]
-    cov_config = json.loads(cov)
-    print(cov_config)
-    app_cov = Flask(cov_config.get('exec_file', 'hehe'))
+    cov_info = os.environ[COV_RENT]
+    cov_config = json.loads(cov_info)
     cov_port = cov_config.get('sub_port', None)
+
+    cov = coverage.Coverage()
+
+
+    app_cov = Flask(cov_config.get('exec_file', 'hehe'))
+
     @app_cov.route("/", methods=['GET', 'POST'])
     def index():
         pass
         return 'eee'
+
+    @app_cov.route("/save", methods=['GET', 'POST'])
+    def save():
+        cov.save()
+        return 'save ok'
+
+    @app_cov.route("/stop", methods=['GET', 'POST'])
+    def stop():
+        cov.save()
+        return 'stop ok'
+
 
     config = {
         'host' : '127.0.0.1',
@@ -41,3 +56,4 @@ if os.environ.get(COV_RENT, None) is not None:
     http_server.start()
     # app.run(**config)
     print('this time is ',cov_port)
+    cov.start()
